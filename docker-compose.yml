@@ -1,0 +1,31 @@
+version: '2.3'
+services:
+  app:
+    build: ./.docker
+    ports:
+      - 80:80
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - db
+  db:
+    image: mariadb:10.1
+    command: mysqld --character-set-server=utf8
+    ports:
+      - 3306:3306
+    volumes:
+      - .database:/var/lib/mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=1234
+      - MYSQL_DATABASE=application
+  adminer:
+    container_name: adminer
+    image: adminer:latest
+    links:
+      - db
+    restart: always
+    ports:
+      - 8080:8080

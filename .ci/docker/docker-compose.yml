@@ -1,0 +1,65 @@
+version: '2.3'
+services:
+    #======================================================
+    # DB
+    #======================================================
+    db:
+        image: mysql:5.7
+        command: mysqld --character-set-server=utf8
+        environment:
+            MYSQL_ROOT_PASSWORD: 1234
+    #======================================================
+    # Build
+    #======================================================
+    build:
+        image: composer
+        volumes:
+            - ${ROOT_DIR}:${ROOT_DIR}
+        working_dir: ${ROOT_DIR}
+        command: >
+            /bin/sh -c "
+                composer install;
+            "
+    #======================================================
+    # Lint
+    #======================================================
+    lint:
+        image: php:${PHP_VERSION}-alpine
+        volumes:
+            - ${ROOT_DIR}:${ROOT_DIR}
+        working_dir: ${ROOT_DIR}
+        command: >
+            /bin/sh -c "
+                if find ./src/ -type f -name '*.php' -exec php -l {} \; | grep \"Parsing error\"; then exit 1; fi
+            "
+    #======================================================
+    # Quality
+    #======================================================
+    quality:
+        image: php:${PHP_VERSION}-alpine
+        volumes:
+            - ${ROOT_DIR}:${ROOT_DIR}
+        working_dir: ${ROOT_DIR}
+        command: >
+            /bin/sh -c "
+                echo \"Running phpcs...\";
+                bin/phpcs --error-severity=1 --warning-severity=8 --extensions=php src;
+                echo \"Running php-cs-fixer...\";
+                bin/php-cs-fixer fix --dry-run --diff
+                echo \"Running phpmd...\";
+                bin/phpmd src text phpmd.xml;
+                echo \"Running phpstan...\";
+                bin/phpstan analyse -c phpstan.neon --autoload-file=vendor/autoload.php -l max src
+            "
+    #======================================================
+    # Unit tests
+    #======================================================
+    unit:
+        image: php:${PHP_VERSION}-alpine
+        volumes:
+            - ${ROOT_DIR}:${ROOT_DIR}
+        working_dir: ${ROOT_DIR}
+        command: >
+            /bin/sh -c "
+                php bin/phpunit -c phpunit.xml tests;
+            "

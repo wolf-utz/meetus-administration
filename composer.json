@@ -1,6 +1,7 @@
 {
+    "name": "meetus/administration",
     "type": "project",
-    "license": "proprietary",
+    "license": "MIT",
     "require": {
         "php": "^7.2.5",
         "ext-ctype": "*",
@@ -33,7 +34,13 @@
         "symfony/debug-pack": "*",
         "symfony/maker-bundle": "^1.0",
         "symfony/profiler-pack": "*",
-        "symfony/test-pack": "*"
+        "symfony/test-pack": "*",
+        "phpunit/phpunit": "^8.5",
+        "squizlabs/php_codesniffer": "^3.5",
+        "friendsofphp/php-cs-fixer": "^2.16",
+        "phpstan/phpstan": "0.12.*",
+        "phpmd/phpmd": "^2.8",
+        "kint-php/kint": "^3.3"
     },
     "config": {
         "preferred-install": {
@@ -70,6 +77,18 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "test": [
+            "./.ci/scripts/ciRunner.sh -s unit"
+        ],
+        "lint": [
+            "./.ci/scripts/ciRunner.sh -s lint"
+        ],
+        "build": [
+            "./.ci/scripts/ciRunner.sh -s build"
+        ],
+        "quality": [
+            "./.ci/scripts/ciRunner.sh -s quality"
         ]
     },
     "conflict": {
