@@ -17,6 +17,7 @@
 
 ###> friendsofphp/php-cs-fixer ###
 /.php_cs.cache
+/.php_cs.dist
 ###< friendsofphp/php-cs-fixer ###
 
 ###> phpunit/phpunit ###
